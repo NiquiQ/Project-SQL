@@ -149,6 +149,8 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         p_job_id, p_salary, p_commission_pct, p_manager_id, p_department_id
     );
 
+    COMMIT;
+    
     -- Якщо все пройшло успішно, логуємо успішний результат
     log_util.log_finish(p_proc_name => 'add_employee', p_text => 'Співробітник доданий: ' ||
         p_first_name || ' ' || p_last_name || ', Посада: ' || p_job_id || ', Відділ: ' || p_department_id);
