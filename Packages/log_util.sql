@@ -27,4 +27,4 @@ CREATE OR REPLACE PACKAGE log_util IS
         p_manager_id       IN NUMBER DEFAULT NULL,
         p_department_id    IN NUMBER DEFAULT NULL);
 END log_util;
-/
+
