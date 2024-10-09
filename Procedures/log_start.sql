@@ -2,7 +2,7 @@ PROCEDURE log_start(p_proc_name IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Старт логування, назва процесу = ' || p_proc_name;
+            v_text := 'РЎС‚Р°СЂС‚ Р»РѕРіСѓРІР°РЅРЅСЏ, РЅР°Р·РІР° РїСЂРѕС†РµСЃСѓ = ' || p_proc_name;
         ELSE
             v_text := p_text;
         END IF;

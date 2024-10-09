@@ -18,10 +18,10 @@ PROCEDURE add_employee(
     v_work_time       VARCHAR2(100);
     v_error_message   VARCHAR2(1000);
     BEGIN
-    -- Виклик процедури логування початку
+    -- Р’РёРєР»РёРє РїСЂРѕС†РµРґСѓСЂРё Р»РѕРіСѓРІР°РЅРЅСЏ РїРѕС‡Р°С‚РєСѓ
     log_util.log_start(p_proc_name => 'add_employee');
 
-    -- Перевірка наявності p_job_id в таблиці jobs
+    -- РџРµСЂРµРІС–СЂРєР° РЅР°СЏРІРЅРѕСЃС‚С– p_job_id РІ С‚Р°Р±Р»РёС†С– jobs
     BEGIN
         SELECT job_title, min_salary, max_salary
         INTO v_job_title, v_min_salary, v_max_salary
@@ -30,10 +30,10 @@ PROCEDURE add_employee(
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Введено неіснуючий код посади');
+            RAISE_APPLICATION_ERROR(-20001, 'Р’РІРµРґРµРЅРѕ РЅРµС–СЃРЅСѓСЋС‡РёР№ РєРѕРґ РїРѕСЃР°РґРё');
     END;
 
-    -- Перевірка наявності p_department_id в таблиці departments
+    -- РџРµСЂРµРІС–СЂРєР° РЅР°СЏРІРЅРѕСЃС‚С– p_department_id РІ С‚Р°Р±Р»РёС†С– departments
     BEGIN
         SELECT department_name
         INTO v_department_name
@@ -42,25 +42,25 @@ PROCEDURE add_employee(
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20002, 'Введено неіснуючий ідентифікатор відділу');
+            RAISE_APPLICATION_ERROR(-20002, 'Р’РІРµРґРµРЅРѕ РЅРµС–СЃРЅСѓСЋС‡РёР№ С–РґРµРЅС‚РёС„С–РєР°С‚РѕСЂ РІС–РґРґС–Р»Сѓ');
     END;
 
-    -- Перевірка відповідності зарплати
+    -- РџРµСЂРµРІС–СЂРєР° РІС–РґРїРѕРІС–РґРЅРѕСЃС‚С– Р·Р°СЂРїР»Р°С‚Рё
     IF p_salary < v_min_salary OR p_salary > v_max_salary THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Зарплата не відповідає діапазону для даної посади');
+        RAISE_APPLICATION_ERROR(-20003, 'Р—Р°СЂРїР»Р°С‚Р° РЅРµ РІС–РґРїРѕРІС–РґР°С” РґС–Р°РїР°Р·РѕРЅСѓ РґР»СЏ РґР°РЅРѕС— РїРѕСЃР°РґРё');
     END IF;
 
-    -- Перевірка робочого часу
+    -- РџРµСЂРµРІС–СЂРєР° СЂРѕР±РѕС‡РѕРіРѕ С‡Р°СЃСѓ
     v_work_time := TO_CHAR(SYSDATE, 'HH24:MI');
     IF TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') IN ('SAT', 'SUN') OR v_work_time NOT BETWEEN '08:00' AND '18:00' THEN
-       RAISE_APPLICATION_ERROR(-20004, 'Ви не можете додати нового співробітника в позаробочий час');
+       RAISE_APPLICATION_ERROR(-20004, 'Р’Рё РЅРµ РјРѕР¶РµС‚Рµ РґРѕРґР°С‚Рё РЅРѕРІРѕРіРѕ СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР° РІ РїРѕР·Р°СЂРѕР±РѕС‡РёР№ С‡Р°СЃ');
     END IF;
 
 
-    -- Знаходження максимального employee_id для нового співробітника
+    -- Р—РЅР°С…РѕРґР¶РµРЅРЅСЏ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ employee_id РґР»СЏ РЅРѕРІРѕРіРѕ СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР°
     SELECT MAX(employee_id) + 1 INTO v_max_employee_id FROM employees;
 
-    -- Вставка нового співробітника
+    -- Р’СЃС‚Р°РІРєР° РЅРѕРІРѕРіРѕ СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР°
     INSERT INTO employees (
         employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary,
         commission_pct, manager_id, department_id
@@ -69,13 +69,15 @@ PROCEDURE add_employee(
         p_job_id, p_salary, p_commission_pct, p_manager_id, p_department_id
     );
 
-    -- Якщо все пройшло успішно, логуємо успішний результат
-    log_util.log_finish(p_proc_name => 'add_employee', p_text => 'Співробітник доданий: ' ||
-        p_first_name || ' ' || p_last_name || ', Посада: ' || p_job_id || ', Відділ: ' || p_department_id);
+	COMMIT;
+
+    -- РЇРєС‰Рѕ РІСЃРµ РїСЂРѕР№С€Р»Рѕ СѓСЃРїС–С€РЅРѕ, Р»РѕРіСѓС”РјРѕ СѓСЃРїС–С€РЅРёР№ СЂРµР·СѓР»СЊС‚Р°С‚
+    log_util.log_finish(p_proc_name => 'add_employee', p_text => 'РЎРїС–РІСЂРѕР±С–С‚РЅРёРє РґРѕРґР°РЅРёР№: ' ||
+        p_first_name || ' ' || p_last_name || ', РџРѕСЃР°РґР°: ' || p_job_id || ', Р’С–РґРґС–Р»: ' || p_department_id);
 
         EXCEPTION
            WHEN OTHERS THEN
-        -- Логування помилки в разі будь-яких виключень
+        -- Р›РѕРіСѓРІР°РЅРЅСЏ РїРѕРјРёР»РєРё РІ СЂР°Р·С– Р±СѓРґСЊ-СЏРєРёС… РІРёРєР»СЋС‡РµРЅСЊ
         v_error_message := SQLERRM;
         log_util.log_error(p_proc_name => 'add_employee', p_sqlerrm => v_error_message);
         RAISE;

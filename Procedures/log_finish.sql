@@ -2,7 +2,7 @@ PROCEDURE log_finish(p_proc_name IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) I
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Завершення логування, назва процесу = ' || p_proc_name;
+            v_text := 'Р—Р°РІРµСЂС€РµРЅРЅСЏ Р»РѕРіСѓРІР°РЅРЅСЏ, РЅР°Р·РІР° РїСЂРѕС†РµСЃСѓ = ' || p_proc_name;
         ELSE
             v_text := p_text;
         END IF;

@@ -2,7 +2,7 @@ PROCEDURE log_error(p_proc_name IN VARCHAR2, p_sqlerrm IN VARCHAR2, p_text IN VA
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'В процедурі ' || p_proc_name || ' сталася помилка. ' || p_sqlerrm;
+            v_text := 'Р’ РїСЂРѕС†РµРґСѓСЂС– ' || p_proc_name || ' СЃС‚Р°Р»Р°СЃСЏ РїРѕРјРёР»РєР°. ' || p_sqlerrm;
         ELSE
             v_text := p_text;
         END IF;

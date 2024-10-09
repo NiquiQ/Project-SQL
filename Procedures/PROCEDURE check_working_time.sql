@@ -6,11 +6,11 @@ PROCEDURE check_working_time IS
         v_day_of_week := TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH');
 
         IF v_day_of_week IN ('SAT', 'SUN') OR v_work_time NOT BETWEEN '08:00' AND '18:00' THEN
-            -- Виклик процедури логування початку
+            -- Р’РёРєР»РёРє РїСЂРѕС†РµРґСѓСЂРё Р»РѕРіСѓРІР°РЅРЅСЏ РїРѕС‡Р°С‚РєСѓ
             log_util.to_log(
                 p_appl_proc => 'check_working_time',
-                p_message => 'Ви можете видаляти співробітника лише в робочий час '
+                p_message => 'Р’Рё РјРѕР¶РµС‚Рµ РІРёРґР°Р»СЏС‚Рё СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР° Р»РёС€Рµ РІ СЂРѕР±РѕС‡РёР№ С‡Р°СЃ '
             );
-            RAISE_APPLICATION_ERROR(-20002, 'Ви можете видаляти співробітника лише в робочий час');
+            RAISE_APPLICATION_ERROR(-20002, 'Р’Рё РјРѕР¶РµС‚Рµ РІРёРґР°Р»СЏС‚Рё СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР° Р»РёС€Рµ РІ СЂРѕР±РѕС‡РёР№ С‡Р°СЃ');
         END IF;
     END check_working_time;

@@ -5,10 +5,10 @@ PROCEDURE fire_an_employee(p_employee_id IN NUMBER) IS
         v_department_id  NUMBER(4);
         v_error_message  VARCHAR2(100);
     BEGIN
-        -- Âèêëèê ïðîöåäóðè ëîãóâàííÿ ïî÷àòêó
+        -- Ð’Ð¸ÐºÐ»Ð¸Ðº Ð¿Ñ€Ð¾Ñ†ÐµÐ´ÑƒÑ€Ð¸ Ð»Ð¾Ð³ÑƒÐ²Ð°Ð½Ð½Ñ Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ
         log_util.log_start(p_proc_name => 'fire_an_employee');
 
-        -- Ïåðåâ³ðêà íàÿâíîñò³ ñï³âðîá³òíèêà
+        -- ÐŸÐµÑ€ÐµÐ²Ñ–Ñ€ÐºÐ° Ð½Ð°ÑÐ²Ð½Ð¾ÑÑ‚Ñ– ÑÐ¿Ñ–Ð²Ñ€Ð¾Ð±Ñ–Ñ‚Ð½Ð¸ÐºÐ°
         BEGIN
             SELECT first_name, last_name, job_id, department_id
             INTO v_first_name, v_last_name, v_job_id, v_department_id
@@ -16,13 +16,13 @@ PROCEDURE fire_an_employee(p_employee_id IN NUMBER) IS
             WHERE employee_id = p_employee_id;
         EXCEPTION
             WHEN NO_DATA_FOUND THEN
-                RAISE_APPLICATION_ERROR(-20001, 'Ïåðåäàíèé ñï³âðîá³òíèê íå ³ñíóº');
+                RAISE_APPLICATION_ERROR(-20001, 'ÐŸÐµÑ€ÐµÐ´Ð°Ð½Ð¸Ð¹ ÑÐ¿Ñ–Ð²Ñ€Ð¾Ð±Ñ–Ñ‚Ð½Ð¸Ðº Ð½Ðµ Ñ–ÑÐ½ÑƒÑ”');
         END;
 
-        -- Ïåðåâ³ðêà ðîáî÷îãî ÷àñó
+        -- ÐŸÐµÑ€ÐµÐ²Ñ–Ñ€ÐºÐ° Ñ€Ð¾Ð±Ð¾Ñ‡Ð¾Ð³Ð¾ Ñ‡Ð°ÑÑƒ
         check_working_time;
 
-        -- Çàïèñ ñï³âðîá³òíèêà â ³ñòîðè÷íó òàáëèöþ ïåðåä âèäàëåííÿì
+        -- Ð—Ð°Ð¿Ð¸Ñ ÑÐ¿Ñ–Ð²Ñ€Ð¾Ð±Ñ–Ñ‚Ð½Ð¸ÐºÐ° Ð² Ñ–ÑÑ‚Ð¾Ñ€Ð¸Ñ‡Ð½Ñƒ Ñ‚Ð°Ð±Ð»Ð¸Ñ†ÑŽ Ð¿ÐµÑ€ÐµÐ´ Ð²Ð¸Ð´Ð°Ð»ÐµÐ½Ð½ÑÐ¼
         BEGIN
             INSERT INTO employees_history (employee_id, first_name, last_name, email, phone_number,
                                            hire_date, job_id, salary, commission_pct, manager_id,
@@ -32,17 +32,17 @@ PROCEDURE fire_an_employee(p_employee_id IN NUMBER) IS
             FROM employees
             WHERE employee_id = p_employee_id;
 
-            -- Âèäàëåííÿ ñï³âðîá³òíèêà
+            -- Ð’Ð¸Ð´Ð°Ð»ÐµÐ½Ð½Ñ ÑÐ¿Ñ–Ð²Ñ€Ð¾Ð±Ñ–Ñ‚Ð½Ð¸ÐºÐ°
             DELETE FROM employees
             WHERE employee_id = p_employee_id;
 
-            -- ßêùî âñå ïðîéøëî óñï³øíî, ëîãóºìî óñï³øíèé ðåçóëüòàò
+            -- Ð¯ÐºÑ‰Ð¾ Ð²ÑÐµ Ð¿Ñ€Ð¾Ð¹ÑˆÐ»Ð¾ ÑƒÑÐ¿Ñ–ÑˆÐ½Ð¾, Ð»Ð¾Ð³ÑƒÑ”Ð¼Ð¾ ÑƒÑÐ¿Ñ–ÑˆÐ½Ð¸Ð¹ Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
             log_util.log_finish(p_proc_name => 'fire_an_employee',
-                                p_text => 'Ñï³âðîá³òíèê ' || v_first_name || ' ' || v_last_name ||
-                                          ', Ïîñàäà: ' || v_job_id || ', Â³ää³ë: ' || v_department_id || ' - óñï³øíî çâ³ëüíåíèé.');
+                                p_text => 'Ð¡Ð¿Ñ–Ð²Ñ€Ð¾Ð±Ñ–Ñ‚Ð½Ð¸Ðº ' || v_first_name || ' ' || v_last_name ||
+                                          ', ÐŸÐ¾ÑÐ°Ð´Ð°: ' || v_job_id || ', Ð’Ñ–Ð´Ð´Ñ–Ð»: ' || v_department_id || ' - ÑƒÑÐ¿Ñ–ÑˆÐ½Ð¾ Ð·Ð²Ñ–Ð»ÑŒÐ½ÐµÐ½Ð¸Ð¹.');
         EXCEPTION
             WHEN OTHERS THEN
-                -- Ëîãóâàííÿ ïîìèëêè â ðàç³ áóäü-ÿêèõ âèêëþ÷åíü
+                -- Ð›Ð¾Ð³ÑƒÐ²Ð°Ð½Ð½Ñ Ð¿Ð¾Ð¼Ð¸Ð»ÐºÐ¸ Ð² Ñ€Ð°Ð·Ñ– Ð±ÑƒÐ´ÑŒ-ÑÐºÐ¸Ñ… Ð²Ð¸ÐºÐ»ÑŽÑ‡ÐµÐ½ÑŒ
                 v_error_message := SQLERRM;
                 log_util.log_error(p_proc_name => 'fire_an_employee', p_sqlerrm => v_error_message);
                 RAISE;

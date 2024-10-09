@@ -14,21 +14,21 @@ PROCEDURE change_attribute_employee (
         v_first   BOOLEAN := TRUE;
         v_error_message VARCHAR2(4000);
     BEGIN
-        -- Початок логування
+        -- РџРѕС‡Р°С‚РѕРє Р»РѕРіСѓРІР°РЅРЅСЏ
         log_util.log_start(p_proc_name => 'change_attribute_employee');
 
-        -- Перевірка, що хоча б один параметр, окрім p_employee_id, не є NULL
+        -- РџРµСЂРµРІС–СЂРєР°, С‰Рѕ С…РѕС‡Р° Р± РѕРґРёРЅ РїР°СЂР°РјРµС‚СЂ, РѕРєСЂС–Рј p_employee_id, РЅРµ С” NULL
         IF p_first_name IS NULL AND p_last_name IS NULL AND p_email IS NULL AND p_phone_number IS NULL AND
            p_job_id IS NULL AND p_salary IS NULL AND p_commission_pct IS NULL AND p_manager_id IS NULL AND
            p_department_id IS NULL THEN
             log_util.log_finish(p_proc_name => 'change_attribute_employee',
-                                p_text => 'Не передано жодних значень для оновлення');
-            RAISE_APPLICATION_ERROR(-20001, 'Не передано жодних значень для оновлення');
+                                p_text => 'РќРµ РїРµСЂРµРґР°РЅРѕ Р¶РѕРґРЅРёС… Р·РЅР°С‡РµРЅСЊ РґР»СЏ РѕРЅРѕРІР»РµРЅРЅСЏ');
+            RAISE_APPLICATION_ERROR(-20001, 'РќРµ РїРµСЂРµРґР°РЅРѕ Р¶РѕРґРЅРёС… Р·РЅР°С‡РµРЅСЊ РґР»СЏ РѕРЅРѕРІР»РµРЅРЅСЏ');
         END IF;
 
         v_sql := 'UPDATE employees SET ';
 
-        -- Додавання умов для кожного параметра
+        -- Р”РѕРґР°РІР°РЅРЅСЏ СѓРјРѕРІ РґР»СЏ РєРѕР¶РЅРѕРіРѕ РїР°СЂР°РјРµС‚СЂР°
         IF p_first_name IS NOT NULL THEN
             v_sql := v_sql || 'first_name = ''' || p_first_name || '''';
             v_first := FALSE;
@@ -99,14 +99,14 @@ PROCEDURE change_attribute_employee (
 
         v_sql := v_sql || ' WHERE employee_id = ' || p_employee_id;
 
-        -- Оновлення співробітника
+        -- РћРЅРѕРІР»РµРЅРЅСЏ СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР°
         BEGIN
             EXECUTE IMMEDIATE v_sql;
             COMMIT;
 
-            -- Логування успішного результату
+            -- Р›РѕРіСѓРІР°РЅРЅСЏ СѓСЃРїС–С€РЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Сѓ
             log_util.log_finish(p_proc_name => 'change_attribute_employee',
-                                p_text => 'У співробітника ' || p_employee_id || ' успішно оновлені атрибути');
+                                p_text => 'РЈ СЃРїС–РІСЂРѕР±С–С‚РЅРёРєР° ' || p_employee_id || ' СѓСЃРїС–С€РЅРѕ РѕРЅРѕРІР»РµРЅС– Р°С‚СЂРёР±СѓС‚Рё');
         EXCEPTION
             WHEN OTHERS THEN
                 v_error_message := SQLERRM;

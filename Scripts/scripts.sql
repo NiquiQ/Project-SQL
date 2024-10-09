@@ -9,7 +9,7 @@ select * from jobs
 select * from DEPARTMENTS
 
 
--- Перевірка процедури add_employee
+-- РџРµСЂРµРІС–СЂРєР° РїСЂРѕС†РµРґСѓСЂРё add_employee
 BEGIN
     log_util.add_employee(
         p_first_name     => 'Peter',
@@ -26,14 +26,14 @@ BEGIN
 END;
 /
 
--- Перевірка процедури fire_an_employee
+-- РџРµСЂРµРІС–СЂРєР° РїСЂРѕС†РµРґСѓСЂРё fire_an_employee
 BEGIN
     log_util.fire_an_employee(p_employee_id => 228);
 END;
 
 select * from employees_history
 
--- Перевірка процедури change_attribute_employee
+-- РџРµСЂРµРІС–СЂРєР° РїСЂРѕС†РµРґСѓСЂРё change_attribute_employee
 select * from employees
 
 BEGIN

@@ -1,6 +1,6 @@
 CREATE OR REPLACE PACKAGE BODY log_util IS
 
-    --Ïðîöåäóðà to_log
+    --Процедура to_log
     PROCEDURE to_log(p_appl_proc IN VARCHAR2, p_message IN VARCHAR2) IS
         PRAGMA autonomous_transaction;
     BEGIN
@@ -9,12 +9,12 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         COMMIT;
     END to_log;
 
-    -- Ïðîöåäóðà log_start
+    -- Процедура log_start
     PROCEDURE log_start(p_proc_name IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Ñòàðò ëîãóâàííÿ, íàçâà ïðîöåñó = ' || p_proc_name;
+            v_text := 'Старт логування, назва процесу = ' || p_proc_name;
         ELSE
             v_text := p_text;
         END IF;
@@ -22,12 +22,12 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         to_log(p_appl_proc => p_proc_name, p_message => v_text);
     END log_start;
 
-    -- Ïðîöåäóðà log_finish
+    -- Процедура log_finish
     PROCEDURE log_finish(p_proc_name IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Çàâåðøåííÿ ëîãóâàííÿ, íàçâà ïðîöåñó = ' || p_proc_name;
+            v_text := 'Завершення логування, назва процесу = ' || p_proc_name;
         ELSE
             v_text := p_text;
         END IF;
@@ -35,12 +35,12 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         to_log(p_appl_proc => p_proc_name, p_message => v_text);
     END log_finish;
 
-    -- Ïðîöåäóðà log_error
+    -- Процедура log_error
     PROCEDURE log_error(p_proc_name IN VARCHAR2, p_sqlerrm IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Â ïðîöåäóð³ ' || p_proc_name || ' ñòàëàñÿ ïîìèëêà. ' || p_sqlerrm;
+            v_text := 'В процедурі ' || p_proc_name || ' сталася помилка. ' || p_sqlerrm;
         ELSE
             v_text := p_text;
         END IF;
@@ -68,10 +68,10 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
     v_work_time       VARCHAR2(100);
     v_error_message   VARCHAR2(1000);
     BEGIN
-    -- Âèêëèê ïðîöåäóðè ëîãóâàííÿ ïî÷àòêó
+    -- Виклик процедури логування початку
     log_util.log_start(p_proc_name => 'add_employee');
 
-    -- Ïåðåâ³ðêà íàÿâíîñò³ p_job_id â òàáëèö³ jobs
+    -- Перевірка наявності p_job_id в таблиці jobs
     BEGIN
         SELECT job_title, min_salary, max_salary
         INTO v_job_title, v_min_salary, v_max_salary
@@ -80,10 +80,10 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Ââåäåíî íå³ñíóþ÷èé êîä ïîñàäè');
+            RAISE_APPLICATION_ERROR(-20001, 'Введено неіснуючий код посади');
     END;
 
-    -- Ïåðåâ³ðêà íàÿâíîñò³ p_department_id â òàáëèö³ departments
+    -- Перевірка наявності p_department_id в таблиці departments
     BEGIN
         SELECT department_name
         INTO v_department_name
@@ -92,25 +92,25 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20002, 'Ââåäåíî íå³ñíóþ÷èé ³äåíòèô³êàòîð â³ää³ëó');
+            RAISE_APPLICATION_ERROR(-20002, 'Введено неіснуючий ідентифікатор відділу');
     END;
 
-    -- Ïåðåâ³ðêà â³äïîâ³äíîñò³ çàðïëàòè
+    -- Перевірка відповідності зарплати
     IF p_salary < v_min_salary OR p_salary > v_max_salary THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Çàðïëàòà íå â³äïîâ³äàº ä³àïàçîíó äëÿ äàíî¿ ïîñàäè');
+        RAISE_APPLICATION_ERROR(-20003, 'Зарплата не відповідає діапазону для даної посади');
     END IF;
 
-    -- Ïåðåâ³ðêà ðîáî÷îãî ÷àñó
+    -- Перевірка робочого часу
     v_work_time := TO_CHAR(SYSDATE, 'HH24:MI');
     IF TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') IN ('SAT', 'SUN') OR v_work_time NOT BETWEEN '08:00' AND '18:00' THEN
-       RAISE_APPLICATION_ERROR(-20004, 'Âè íå ìîæåòå äîäàòè íîâîãî ñï³âðîá³òíèêà â ïîçàðîáî÷èé ÷àñ');
+       RAISE_APPLICATION_ERROR(-20004, 'Ви не можете додати нового співробітника в позаробочий час');
     END IF;
 
 
-    -- Çíàõîäæåííÿ ìàêñèìàëüíîãî employee_id äëÿ íîâîãî ñï³âðîá³òíèêà
+    -- Знаходження максимального employee_id для нового співробітника
     SELECT MAX(employee_id) + 1 INTO v_max_employee_id FROM employees;
 
-    -- Âñòàâêà íîâîãî ñï³âðîá³òíèêà
+    -- Вставка нового співробітника
     INSERT INTO employees (
         employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary,
         commission_pct, manager_id, department_id
@@ -118,16 +118,16 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_max_employee_id, p_first_name, p_last_name, p_email, p_phone_number, p_hire_date,
         p_job_id, p_salary, p_commission_pct, p_manager_id, p_department_id
     );
-
+    
     COMMIT;
-
-    -- ßêùî âñå ïðîéøëî óñï³øíî, ëîãóºìî óñï³øíèé ðåçóëüòàò
-    log_util.log_finish(p_proc_name => 'add_employee', p_text => 'Ñï³âðîá³òíèê äîäàíèé: ' ||
-        p_first_name || ' ' || p_last_name || ', Ïîñàäà: ' || p_job_id || ', Â³ää³ë: ' || p_department_id);
+    
+    -- Якщо все пройшло успішно, логуємо успішний результат
+    log_util.log_finish(p_proc_name => 'add_employee', p_text => 'Співробітник доданий: ' ||
+        p_first_name || ' ' || p_last_name || ', Посада: ' || p_job_id || ', Відділ: ' || p_department_id);
 
         EXCEPTION
            WHEN OTHERS THEN
-        -- Ëîãóâàííÿ ïîìèëêè â ðàç³ áóäü-ÿêèõ âèêëþ÷åíü
+        -- Логування помилки в разі будь-яких виключень
         v_error_message := SQLERRM;
         log_util.log_error(p_proc_name => 'add_employee', p_sqlerrm => v_error_message);
         RAISE;
@@ -141,17 +141,17 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_day_of_week := TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH');
 
         IF v_day_of_week IN ('SAT', 'SUN') OR v_work_time NOT BETWEEN '08:00' AND '18:00' THEN
-            -- Âèêëèê ïðîöåäóðè ëîãóâàííÿ ïî÷àòêó
+            -- Виклик процедури логування початку
             log_util.to_log(
                 p_appl_proc => 'check_working_time',
-                p_message => 'Âè ìîæåòå âèäàëÿòè ñï³âðîá³òíèêà ëèøå â ðîáî÷èé ÷àñ '
+                p_message => 'Ви можете видаляти співробітника лише в робочий час '
             );
-            RAISE_APPLICATION_ERROR(-20002, 'Âè ìîæåòå âèäàëÿòè ñï³âðîá³òíèêà ëèøå â ðîáî÷èé ÷àñ');
+            RAISE_APPLICATION_ERROR(-20002, 'Ви можете видаляти співробітника лише в робочий час');
         END IF;
     END check_working_time;
 
 
-        -- Ïðîöåäóðà fire_an_employee
+        -- Процедура fire_an_employee
     PROCEDURE fire_an_employee(p_employee_id IN NUMBER) IS
         v_first_name     VARCHAR2(20);
         v_last_name      VARCHAR2(25);
@@ -159,10 +159,10 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_department_id  NUMBER(4);
         v_error_message  VARCHAR2(100);
     BEGIN
-        -- Âèêëèê ïðîöåäóðè ëîãóâàííÿ ïî÷àòêó
+        -- Виклик процедури логування початку
         log_util.log_start(p_proc_name => 'fire_an_employee');
 
-        -- Ïåðåâ³ðêà íàÿâíîñò³ ñï³âðîá³òíèêà
+        -- Перевірка наявності співробітника
         BEGIN
             SELECT first_name, last_name, job_id, department_id
             INTO v_first_name, v_last_name, v_job_id, v_department_id
@@ -170,13 +170,13 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
             WHERE employee_id = p_employee_id;
         EXCEPTION
             WHEN NO_DATA_FOUND THEN
-                RAISE_APPLICATION_ERROR(-20001, 'Ïåðåäàíèé ñï³âðîá³òíèê íå ³ñíóº');
+                RAISE_APPLICATION_ERROR(-20001, 'Переданий співробітник не існує');
         END;
 
-        -- Ïåðåâ³ðêà ðîáî÷îãî ÷àñó
+        -- Перевірка робочого часу
         check_working_time;
 
-        -- Çàïèñ ñï³âðîá³òíèêà â ³ñòîðè÷íó òàáëèöþ ïåðåä âèäàëåííÿì
+        -- Запис співробітника в історичну таблицю перед видаленням
         BEGIN
             INSERT INTO employees_history (employee_id, first_name, last_name, email, phone_number,
                                            hire_date, job_id, salary, commission_pct, manager_id,
@@ -186,17 +186,19 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
             FROM employees
             WHERE employee_id = p_employee_id;
 
-            -- Âèäàëåííÿ ñï³âðîá³òíèêà
+            -- Видалення співробітника
             DELETE FROM employees
             WHERE employee_id = p_employee_id;
+            
+            COMMIT;
 
-            -- ßêùî âñå ïðîéøëî óñï³øíî, ëîãóºìî óñï³øíèé ðåçóëüòàò
+            -- Якщо все пройшло успішно, логуємо успішний результат
             log_util.log_finish(p_proc_name => 'fire_an_employee',
-                                p_text => 'Ñï³âðîá³òíèê ' || v_first_name || ' ' || v_last_name ||
-                                          ', Ïîñàäà: ' || v_job_id || ', Â³ää³ë: ' || v_department_id || ' - óñï³øíî çâ³ëüíåíèé.');
+                                p_text => 'Співробітник ' || v_first_name || ' ' || v_last_name ||
+                                          ', Посада: ' || v_job_id || ', Відділ: ' || v_department_id || ' - успішно звільнений.');
         EXCEPTION
             WHEN OTHERS THEN
-                -- Ëîãóâàííÿ ïîìèëêè â ðàç³ áóäü-ÿêèõ âèêëþ÷åíü
+                -- Логування помилки в разі будь-яких виключень
                 v_error_message := SQLERRM;
                 log_util.log_error(p_proc_name => 'fire_an_employee', p_sqlerrm => v_error_message);
                 RAISE;
@@ -220,21 +222,21 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_first   BOOLEAN := TRUE;
         v_error_message VARCHAR2(4000);
     BEGIN
-        -- Ïî÷àòîê ëîãóâàííÿ
+        -- Початок логування
         log_util.log_start(p_proc_name => 'change_attribute_employee');
 
-        -- Ïåðåâ³ðêà, ùî õî÷à á îäèí ïàðàìåòð, îêð³ì p_employee_id, íå º NULL
+        -- Перевірка, що хоча б один параметр, окрім p_employee_id, не є NULL
         IF p_first_name IS NULL AND p_last_name IS NULL AND p_email IS NULL AND p_phone_number IS NULL AND
            p_job_id IS NULL AND p_salary IS NULL AND p_commission_pct IS NULL AND p_manager_id IS NULL AND
            p_department_id IS NULL THEN
             log_util.log_finish(p_proc_name => 'change_attribute_employee',
-                                p_text => 'Íå ïåðåäàíî æîäíèõ çíà÷åíü äëÿ îíîâëåííÿ');
-            RAISE_APPLICATION_ERROR(-20001, 'Íå ïåðåäàíî æîäíèõ çíà÷åíü äëÿ îíîâëåííÿ');
+                                p_text => 'Не передано жодних значень для оновлення');
+            RAISE_APPLICATION_ERROR(-20001, 'Не передано жодних значень для оновлення');
         END IF;
 
         v_sql := 'UPDATE employees SET ';
 
-        -- Äîäàâàííÿ óìîâ äëÿ êîæíîãî ïàðàìåòðà
+        -- Додавання умов для кожного параметра
         IF p_first_name IS NOT NULL THEN
             v_sql := v_sql || 'first_name = ''' || p_first_name || '''';
             v_first := FALSE;
@@ -305,14 +307,14 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
 
         v_sql := v_sql || ' WHERE employee_id = ' || p_employee_id;
 
-        -- Îíîâëåííÿ ñï³âðîá³òíèêà
+        -- Оновлення співробітника
         BEGIN
             EXECUTE IMMEDIATE v_sql;
             COMMIT;
 
-            -- Ëîãóâàííÿ óñï³øíîãî ðåçóëüòàòó
+            -- Логування успішного результату
             log_util.log_finish(p_proc_name => 'change_attribute_employee',
-                                p_text => 'Ó ñï³âðîá³òíèêà ' || p_employee_id || ' óñï³øíî îíîâëåí³ àòðèáóòè');
+                                p_text => 'У співробітника ' || p_employee_id || ' успішно оновлені атрибути');
         EXCEPTION
             WHEN OTHERS THEN
                 v_error_message := SQLERRM;
