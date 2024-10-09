@@ -1,6 +1,6 @@
 CREATE OR REPLACE PACKAGE BODY log_util IS
 
-    --Процедура to_log
+    --ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г  to_log
     PROCEDURE to_log(p_appl_proc IN VARCHAR2, p_message IN VARCHAR2) IS
         PRAGMA autonomous_transaction;
     BEGIN
@@ -9,12 +9,12 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         COMMIT;
     END to_log;
 
-    -- Процедура log_start
+    -- ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г  log_start
     PROCEDURE log_start(p_proc_name IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Старт логування, назва процесу = ' || p_proc_name;
+            v_text := 'Г‘ГІГ Г°ГІ Г«Г®ГЈГіГўГ Г­Г­Гї, Г­Г Г§ГўГ  ГЇГ°Г®Г¶ГҐГ±Гі = ' || p_proc_name;
         ELSE
             v_text := p_text;
         END IF;
@@ -22,12 +22,12 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         to_log(p_appl_proc => p_proc_name, p_message => v_text);
     END log_start;
 
-    -- Процедура log_finish
+    -- ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г  log_finish
     PROCEDURE log_finish(p_proc_name IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'Завершення логування, назва процесу = ' || p_proc_name;
+            v_text := 'Г‡Г ГўГҐГ°ГёГҐГ­Г­Гї Г«Г®ГЈГіГўГ Г­Г­Гї, Г­Г Г§ГўГ  ГЇГ°Г®Г¶ГҐГ±Гі = ' || p_proc_name;
         ELSE
             v_text := p_text;
         END IF;
@@ -35,12 +35,12 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         to_log(p_appl_proc => p_proc_name, p_message => v_text);
     END log_finish;
 
-    -- Процедура log_error
+    -- ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г  log_error
     PROCEDURE log_error(p_proc_name IN VARCHAR2, p_sqlerrm IN VARCHAR2, p_text IN VARCHAR2 DEFAULT NULL) IS
         v_text VARCHAR2(5000);
     BEGIN
         IF p_text IS NULL THEN
-            v_text := 'В процедурі ' || p_proc_name || ' сталася помилка. ' || p_sqlerrm;
+            v_text := 'Г‚ ГЇГ°Г®Г¶ГҐГ¤ГіГ°Ві ' || p_proc_name || ' Г±ГІГ Г«Г Г±Гї ГЇГ®Г¬ГЁГ«ГЄГ . ' || p_sqlerrm;
         ELSE
             v_text := p_text;
         END IF;
@@ -68,10 +68,10 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
     v_work_time       VARCHAR2(100);
     v_error_message   VARCHAR2(1000);
     BEGIN
-    -- Виклик процедури логування початку
+    -- Г‚ГЁГЄГ«ГЁГЄ ГЇГ°Г®Г¶ГҐГ¤ГіГ°ГЁ Г«Г®ГЈГіГўГ Г­Г­Гї ГЇГ®Г·Г ГІГЄГі
     log_util.log_start(p_proc_name => 'add_employee');
 
-    -- Перевірка наявності p_job_id в таблиці jobs
+    -- ГЏГҐГ°ГҐГўВіГ°ГЄГ  Г­Г ГїГўГ­Г®Г±ГІВі p_job_id Гў ГІГ ГЎГ«ГЁГ¶Ві jobs
     BEGIN
         SELECT job_title, min_salary, max_salary
         INTO v_job_title, v_min_salary, v_max_salary
@@ -80,10 +80,10 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Введено неіснуючий код посади');
+            RAISE_APPLICATION_ERROR(-20001, 'Г‚ГўГҐГ¤ГҐГ­Г® Г­ГҐВіГ±Г­ГіГѕГ·ГЁГ© ГЄГ®Г¤ ГЇГ®Г±Г Г¤ГЁ');
     END;
 
-    -- Перевірка наявності p_department_id в таблиці departments
+    -- ГЏГҐГ°ГҐГўВіГ°ГЄГ  Г­Г ГїГўГ­Г®Г±ГІВі p_department_id Гў ГІГ ГЎГ«ГЁГ¶Ві departments
     BEGIN
         SELECT department_name
         INTO v_department_name
@@ -92,25 +92,25 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
 
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20002, 'Введено неіснуючий ідентифікатор відділу');
+            RAISE_APPLICATION_ERROR(-20002, 'Г‚ГўГҐГ¤ГҐГ­Г® Г­ГҐВіГ±Г­ГіГѕГ·ГЁГ© ВіГ¤ГҐГ­ГІГЁГґВіГЄГ ГІГ®Г° ГўВіГ¤Г¤ВіГ«Гі');
     END;
 
-    -- Перевірка відповідності зарплати
+    -- ГЏГҐГ°ГҐГўВіГ°ГЄГ  ГўВіГ¤ГЇГ®ГўВіГ¤Г­Г®Г±ГІВі Г§Г Г°ГЇГ«Г ГІГЁ
     IF p_salary < v_min_salary OR p_salary > v_max_salary THEN
-        RAISE_APPLICATION_ERROR(-20003, 'Зарплата не відповідає діапазону для даної посади');
+        RAISE_APPLICATION_ERROR(-20003, 'Г‡Г Г°ГЇГ«Г ГІГ  Г­ГҐ ГўВіГ¤ГЇГ®ГўВіГ¤Г Вє Г¤ВіГ ГЇГ Г§Г®Г­Гі Г¤Г«Гї Г¤Г Г­Г®Вї ГЇГ®Г±Г Г¤ГЁ');
     END IF;
 
-    -- Перевірка робочого часу
+    -- ГЏГҐГ°ГҐГўВіГ°ГЄГ  Г°Г®ГЎГ®Г·Г®ГЈГ® Г·Г Г±Гі
     v_work_time := TO_CHAR(SYSDATE, 'HH24:MI');
     IF TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH') IN ('SAT', 'SUN') OR v_work_time NOT BETWEEN '08:00' AND '18:00' THEN
-       RAISE_APPLICATION_ERROR(-20004, 'Ви не можете додати нового співробітника в позаробочий час');
+       RAISE_APPLICATION_ERROR(-20004, 'Г‚ГЁ Г­ГҐ Г¬Г®Г¦ГҐГІГҐ Г¤Г®Г¤Г ГІГЁ Г­Г®ГўГ®ГЈГ® Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ  Гў ГЇГ®Г§Г Г°Г®ГЎГ®Г·ГЁГ© Г·Г Г±');
     END IF;
 
 
-    -- Знаходження максимального employee_id для нового співробітника
+    -- Г‡Г­Г ГµГ®Г¤Г¦ГҐГ­Г­Гї Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г®ГЈГ® employee_id Г¤Г«Гї Г­Г®ГўГ®ГЈГ® Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ 
     SELECT MAX(employee_id) + 1 INTO v_max_employee_id FROM employees;
 
-    -- Вставка нового співробітника
+    -- Г‚Г±ГІГ ГўГЄГ  Г­Г®ГўГ®ГЈГ® Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ 
     INSERT INTO employees (
         employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary,
         commission_pct, manager_id, department_id
@@ -119,13 +119,15 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         p_job_id, p_salary, p_commission_pct, p_manager_id, p_department_id
     );
 
-    -- Якщо все пройшло успішно, логуємо успішний результат
-    log_util.log_finish(p_proc_name => 'add_employee', p_text => 'Співробітник доданий: ' ||
-        p_first_name || ' ' || p_last_name || ', Посада: ' || p_job_id || ', Відділ: ' || p_department_id);
+    COMMIT;
+
+    -- ГџГЄГ№Г® ГўГ±ГҐ ГЇГ°Г®Г©ГёГ«Г® ГіГ±ГЇВіГёГ­Г®, Г«Г®ГЈГіВєГ¬Г® ГіГ±ГЇВіГёГ­ГЁГ© Г°ГҐГ§ГіГ«ГјГІГ ГІ
+    log_util.log_finish(p_proc_name => 'add_employee', p_text => 'Г‘ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄ Г¤Г®Г¤Г Г­ГЁГ©: ' ||
+        p_first_name || ' ' || p_last_name || ', ГЏГ®Г±Г Г¤Г : ' || p_job_id || ', Г‚ВіГ¤Г¤ВіГ«: ' || p_department_id);
 
         EXCEPTION
            WHEN OTHERS THEN
-        -- Логування помилки в разі будь-яких виключень
+        -- Г‹Г®ГЈГіГўГ Г­Г­Гї ГЇГ®Г¬ГЁГ«ГЄГЁ Гў Г°Г Г§Ві ГЎГіГ¤Гј-ГїГЄГЁГµ ГўГЁГЄГ«ГѕГ·ГҐГ­Гј
         v_error_message := SQLERRM;
         log_util.log_error(p_proc_name => 'add_employee', p_sqlerrm => v_error_message);
         RAISE;
@@ -139,17 +141,17 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_day_of_week := TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE=ENGLISH');
 
         IF v_day_of_week IN ('SAT', 'SUN') OR v_work_time NOT BETWEEN '08:00' AND '18:00' THEN
-            -- Виклик процедури логування початку
+            -- Г‚ГЁГЄГ«ГЁГЄ ГЇГ°Г®Г¶ГҐГ¤ГіГ°ГЁ Г«Г®ГЈГіГўГ Г­Г­Гї ГЇГ®Г·Г ГІГЄГі
             log_util.to_log(
                 p_appl_proc => 'check_working_time',
-                p_message => 'Ви можете видаляти співробітника лише в робочий час '
+                p_message => 'Г‚ГЁ Г¬Г®Г¦ГҐГІГҐ ГўГЁГ¤Г Г«ГїГІГЁ Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ  Г«ГЁГёГҐ Гў Г°Г®ГЎГ®Г·ГЁГ© Г·Г Г± '
             );
-            RAISE_APPLICATION_ERROR(-20002, 'Ви можете видаляти співробітника лише в робочий час');
+            RAISE_APPLICATION_ERROR(-20002, 'Г‚ГЁ Г¬Г®Г¦ГҐГІГҐ ГўГЁГ¤Г Г«ГїГІГЁ Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ  Г«ГЁГёГҐ Гў Г°Г®ГЎГ®Г·ГЁГ© Г·Г Г±');
         END IF;
     END check_working_time;
 
 
-        -- Процедура fire_an_employee
+        -- ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г  fire_an_employee
     PROCEDURE fire_an_employee(p_employee_id IN NUMBER) IS
         v_first_name     VARCHAR2(20);
         v_last_name      VARCHAR2(25);
@@ -157,10 +159,10 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_department_id  NUMBER(4);
         v_error_message  VARCHAR2(100);
     BEGIN
-        -- Виклик процедури логування початку
+        -- Г‚ГЁГЄГ«ГЁГЄ ГЇГ°Г®Г¶ГҐГ¤ГіГ°ГЁ Г«Г®ГЈГіГўГ Г­Г­Гї ГЇГ®Г·Г ГІГЄГі
         log_util.log_start(p_proc_name => 'fire_an_employee');
 
-        -- Перевірка наявності співробітника
+        -- ГЏГҐГ°ГҐГўВіГ°ГЄГ  Г­Г ГїГўГ­Г®Г±ГІВі Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ 
         BEGIN
             SELECT first_name, last_name, job_id, department_id
             INTO v_first_name, v_last_name, v_job_id, v_department_id
@@ -168,13 +170,13 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
             WHERE employee_id = p_employee_id;
         EXCEPTION
             WHEN NO_DATA_FOUND THEN
-                RAISE_APPLICATION_ERROR(-20001, 'Переданий співробітник не існує');
+                RAISE_APPLICATION_ERROR(-20001, 'ГЏГҐГ°ГҐГ¤Г Г­ГЁГ© Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄ Г­ГҐ ВіГ±Г­ГіВє');
         END;
 
-        -- Перевірка робочого часу
+        -- ГЏГҐГ°ГҐГўВіГ°ГЄГ  Г°Г®ГЎГ®Г·Г®ГЈГ® Г·Г Г±Гі
         check_working_time;
 
-        -- Запис співробітника в історичну таблицю перед видаленням
+        -- Г‡Г ГЇГЁГ± Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ  Гў ВіГ±ГІГ®Г°ГЁГ·Г­Гі ГІГ ГЎГ«ГЁГ¶Гѕ ГЇГҐГ°ГҐГ¤ ГўГЁГ¤Г Г«ГҐГ­Г­ГїГ¬
         BEGIN
             INSERT INTO employees_history (employee_id, first_name, last_name, email, phone_number,
                                            hire_date, job_id, salary, commission_pct, manager_id,
@@ -184,17 +186,17 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
             FROM employees
             WHERE employee_id = p_employee_id;
 
-            -- Видалення співробітника
+            -- Г‚ГЁГ¤Г Г«ГҐГ­Г­Гї Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ 
             DELETE FROM employees
             WHERE employee_id = p_employee_id;
 
-            -- Якщо все пройшло успішно, логуємо успішний результат
+            -- ГџГЄГ№Г® ГўГ±ГҐ ГЇГ°Г®Г©ГёГ«Г® ГіГ±ГЇВіГёГ­Г®, Г«Г®ГЈГіВєГ¬Г® ГіГ±ГЇВіГёГ­ГЁГ© Г°ГҐГ§ГіГ«ГјГІГ ГІ
             log_util.log_finish(p_proc_name => 'fire_an_employee',
-                                p_text => 'Співробітник ' || v_first_name || ' ' || v_last_name ||
-                                          ', Посада: ' || v_job_id || ', Відділ: ' || v_department_id || ' - успішно звільнений.');
+                                p_text => 'Г‘ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄ ' || v_first_name || ' ' || v_last_name ||
+                                          ', ГЏГ®Г±Г Г¤Г : ' || v_job_id || ', Г‚ВіГ¤Г¤ВіГ«: ' || v_department_id || ' - ГіГ±ГЇВіГёГ­Г® Г§ГўВіГ«ГјГ­ГҐГ­ГЁГ©.');
         EXCEPTION
             WHEN OTHERS THEN
-                -- Логування помилки в разі будь-яких виключень
+                -- Г‹Г®ГЈГіГўГ Г­Г­Гї ГЇГ®Г¬ГЁГ«ГЄГЁ Гў Г°Г Г§Ві ГЎГіГ¤Гј-ГїГЄГЁГµ ГўГЁГЄГ«ГѕГ·ГҐГ­Гј
                 v_error_message := SQLERRM;
                 log_util.log_error(p_proc_name => 'fire_an_employee', p_sqlerrm => v_error_message);
                 RAISE;
@@ -218,21 +220,21 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
         v_first   BOOLEAN := TRUE;
         v_error_message VARCHAR2(4000);
     BEGIN
-        -- Початок логування
+        -- ГЏГ®Г·Г ГІГ®ГЄ Г«Г®ГЈГіГўГ Г­Г­Гї
         log_util.log_start(p_proc_name => 'change_attribute_employee');
 
-        -- Перевірка, що хоча б один параметр, окрім p_employee_id, не є NULL
+        -- ГЏГҐГ°ГҐГўВіГ°ГЄГ , Г№Г® ГµГ®Г·Г  ГЎ Г®Г¤ГЁГ­ ГЇГ Г°Г Г¬ГҐГІГ°, Г®ГЄГ°ВіГ¬ p_employee_id, Г­ГҐ Вє NULL
         IF p_first_name IS NULL AND p_last_name IS NULL AND p_email IS NULL AND p_phone_number IS NULL AND
            p_job_id IS NULL AND p_salary IS NULL AND p_commission_pct IS NULL AND p_manager_id IS NULL AND
            p_department_id IS NULL THEN
             log_util.log_finish(p_proc_name => 'change_attribute_employee',
-                                p_text => 'Не передано жодних значень для оновлення');
-            RAISE_APPLICATION_ERROR(-20001, 'Не передано жодних значень для оновлення');
+                                p_text => 'ГЌГҐ ГЇГҐГ°ГҐГ¤Г Г­Г® Г¦Г®Г¤Г­ГЁГµ Г§Г­Г Г·ГҐГ­Гј Г¤Г«Гї Г®Г­Г®ГўГ«ГҐГ­Г­Гї');
+            RAISE_APPLICATION_ERROR(-20001, 'ГЌГҐ ГЇГҐГ°ГҐГ¤Г Г­Г® Г¦Г®Г¤Г­ГЁГµ Г§Г­Г Г·ГҐГ­Гј Г¤Г«Гї Г®Г­Г®ГўГ«ГҐГ­Г­Гї');
         END IF;
 
         v_sql := 'UPDATE employees SET ';
 
-        -- Додавання умов для кожного параметра
+        -- Г„Г®Г¤Г ГўГ Г­Г­Гї ГіГ¬Г®Гў Г¤Г«Гї ГЄГ®Г¦Г­Г®ГЈГ® ГЇГ Г°Г Г¬ГҐГІГ°Г 
         IF p_first_name IS NOT NULL THEN
             v_sql := v_sql || 'first_name = ''' || p_first_name || '''';
             v_first := FALSE;
@@ -303,14 +305,14 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
 
         v_sql := v_sql || ' WHERE employee_id = ' || p_employee_id;
 
-        -- Оновлення співробітника
+        -- ГЋГ­Г®ГўГ«ГҐГ­Г­Гї Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ 
         BEGIN
             EXECUTE IMMEDIATE v_sql;
             COMMIT;
 
-            -- Логування успішного результату
+            -- Г‹Г®ГЈГіГўГ Г­Г­Гї ГіГ±ГЇВіГёГ­Г®ГЈГ® Г°ГҐГ§ГіГ«ГјГІГ ГІГі
             log_util.log_finish(p_proc_name => 'change_attribute_employee',
-                                p_text => 'У співробітника ' || p_employee_id || ' успішно оновлені атрибути');
+                                p_text => 'Г“ Г±ГЇВіГўГ°Г®ГЎВіГІГ­ГЁГЄГ  ' || p_employee_id || ' ГіГ±ГЇВіГёГ­Г® Г®Г­Г®ГўГ«ГҐГ­Ві Г ГІГ°ГЁГЎГіГІГЁ');
         EXCEPTION
             WHEN OTHERS THEN
                 v_error_message := SQLERRM;
