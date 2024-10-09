@@ -217,6 +217,7 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
             -- Видалення співробітника
             DELETE FROM employees
             WHERE employee_id = p_employee_id;
+            COMMIT;
 
             -- Якщо все пройшло успішно, логуємо успішний результат
             log_util.log_finish(p_proc_name => 'fire_an_employee',
