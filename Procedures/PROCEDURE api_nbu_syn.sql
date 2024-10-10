@@ -1,7 +1,7 @@
-CREATE OR REPLACE PROCEDURE api_nbu_sync IS
+PROCEDURE api_nbu_sync IS
     v_list_currencies  VARCHAR2(2000);
     v_error_message    VARCHAR2(1000);
-BEGIN
+    BEGIN
     -- Витягуємо список валют із sys_params
     BEGIN
         SELECT value_text
@@ -15,7 +15,7 @@ BEGIN
             log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => 'Параметр list_currencies не знайдено');
             RAISE_APPLICATION_ERROR(-20001, 'Параметр list_currencies не знайдено');
         WHEN OTHERS THEN
-            -- Логування помилки
+            -- Логуємо помтлку
             v_error_message := SQLERRM;
             log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => v_error_message);
             RAISE;
@@ -26,32 +26,27 @@ BEGIN
                FROM TABLE(util.table_from_list(p_list_val => v_list_currencies))) 
     LOOP
         BEGIN
-    -- Оновлення даних у таблиці cur_exchange
+               -- Оновлення даних у таблиці cur_exchange
             INSERT INTO cur_exchange (r030, txt, rate, cur, exchangedate)
             SELECT r030, txt, rate, cur, exchangedate
             FROM TABLE(util.get_currency(p_currency => cc.curr));
 
-            -- Логування успішної операції
+            -- Якщо все пройшло успішно, логуємо успішний результат
             log_util.log_finish(p_proc_name => 'api_nbu_sync', p_text => 'Курс для валюти ' || cc.curr || ' успішно оновлено.');
 
         EXCEPTION
             WHEN OTHERS THEN
-                -- Логування помилки для кожної валюти окремо
                 v_error_message := SQLERRM;
                 log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => 'Помилка для валюти ' || cc.curr || ': ' || v_error_message);
                 -- Продовжуємо обробку інших валют навіть у разі помилки
         END;
     END LOOP;
-
-    -- Фіксація транзакцій після успішного завершення
+    
     COMMIT;
     
-EXCEPTION
+    EXCEPTION
     WHEN OTHERS THEN
-        -- Логування загальної помилки
         v_error_message := SQLERRM;
         log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => v_error_message);
-        ROLLBACK;
         RAISE;
-END api_nbu_sync;
-/
+    END api_nbu_sync;   

@@ -374,7 +374,6 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
     WHEN OTHERS THEN
         v_error_message := SQLERRM;
         log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => v_error_message);
-        ROLLBACK;
         RAISE;
     END api_nbu_sync;    
 
