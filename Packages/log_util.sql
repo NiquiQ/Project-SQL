@@ -26,5 +26,6 @@ CREATE OR REPLACE PACKAGE log_util IS
         p_commission_pct   IN VARCHAR2 DEFAULT NULL,
         p_manager_id       IN NUMBER DEFAULT NULL,
         p_department_id    IN NUMBER DEFAULT NULL);
+      PROCEDURE api_nbu_sync;      
 END log_util;
 /
