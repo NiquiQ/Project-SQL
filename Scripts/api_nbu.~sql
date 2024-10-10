@@ -13,7 +13,7 @@ select * from sys_params
 
 
 INSERT INTO sys_params (param_name, value_date, value_text, param_descr)
-VALUES ('list_currencies', TRUNC(SYSDATE), 'USD,EUR,KZT,AMD,GBP,ILS', 'Ñïèñîê âàëþò äëÿ ñèíõðîí³çàö³¿ â ïðîöåäóð³ util.api_nbu_sync');
+VALUES ('list_currencies', TRUNC(SYSDATE), 'USD,EUR,KZT,AMD,GBP,ILS', 'Ð¡Ð¿Ð¸ÑÐ¾Ðº Ð²Ð°Ð»ÑŽÑ‚ Ð´Ð»Ñ ÑÐ¸Ð½Ñ…Ñ€Ð¾Ð½Ñ–Ð·Ð°Ñ†Ñ–Ñ— Ð² Ð¿Ñ€Ð¾Ñ†ÐµÐ´ÑƒÑ€Ñ– util.api_nbu_sync');
 
 select * from cur_exchange
 
@@ -23,18 +23,12 @@ END;
 
 BEGIN
     DBMS_SCHEDULER.create_job (
-        job_name        => 'JOB_CUR_EXCHANGE',
+        job_name        => 'JOB_SYNC_CURRENCY',
         job_type        => 'PLSQL_BLOCK',
-        job_action      => 'BEGIN log_util.api_nbu_sync; END;',
+        job_action      => 'BEGIN api_nbu_sync; END;',
         start_date      => SYSTIMESTAMP,
         repeat_interval => 'FREQ=DAILY; BYHOUR=6; BYMINUTE=0',
         enabled         => TRUE
     );
 END;
 
-
-
-BEGIN
-DBMS_SCHEDULER.RUN_JOB(job_name => 'JOB_CUR_EXCHANGE');
-END;
-/
