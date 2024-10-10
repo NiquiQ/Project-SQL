@@ -36,6 +36,8 @@ PROCEDURE fire_an_employee(p_employee_id IN NUMBER) IS
             DELETE FROM employees
             WHERE employee_id = p_employee_id;
 
+            COMMIT;
+
             -- Якщо все пройшло успішно, логуємо успішний результат
             log_util.log_finish(p_proc_name => 'fire_an_employee',
                                 p_text => 'Співробітник ' || v_first_name || ' ' || v_last_name ||

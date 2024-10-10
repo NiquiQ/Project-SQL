@@ -379,4 +379,4 @@ CREATE OR REPLACE PACKAGE BODY log_util IS
     END api_nbu_sync;    
 
 END log_util;
-/
+

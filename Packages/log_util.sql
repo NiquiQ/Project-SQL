@@ -28,4 +28,4 @@ CREATE OR REPLACE PACKAGE log_util IS
         p_department_id    IN NUMBER DEFAULT NULL);
       PROCEDURE api_nbu_sync;      
 END log_util;
-/
+
