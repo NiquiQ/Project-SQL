@@ -31,27 +31,23 @@ BEGIN
             SELECT r030, txt, rate, cur, exchangedate
             FROM TABLE(util.get_currency(p_currency => cc.curr));
 
-            -- Логування успішної операції
+            -- Логування якщо успішно
             log_util.log_finish(p_proc_name => 'api_nbu_sync', p_text => 'Курс для валюти ' || cc.curr || ' успішно оновлено.');
 
         EXCEPTION
             WHEN OTHERS THEN
-                -- Логування помилки для кожної валюти окремо
                 v_error_message := SQLERRM;
                 log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => 'Помилка для валюти ' || cc.curr || ': ' || v_error_message);
                 -- Продовжуємо обробку інших валют навіть у разі помилки
         END;
     END LOOP;
 
-    -- Фіксація транзакцій після успішного завершення
     COMMIT;
     
 EXCEPTION
     WHEN OTHERS THEN
-        -- Логування загальної помилки
         v_error_message := SQLERRM;
         log_util.log_error(p_proc_name => 'api_nbu_sync', p_sqlerrm => v_error_message);
-        ROLLBACK;
         RAISE;
 END api_nbu_sync;
 /
